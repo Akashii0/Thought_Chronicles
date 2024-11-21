@@ -3,9 +3,10 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from sqlalchemy.orm import Session
-import models, app.schemas as schemas
-from database import engine, get_db
-from routers import crud, auth, user
+import app.models as models
+import app.schemas as schemas
+from app.database import engine, get_db
+from app.routers import crud, auth, user
 
 # Create the database tables
 models.Base.metadata.create_all(bind=engine)
