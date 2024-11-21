@@ -7,7 +7,7 @@ const Navbar = () => {
             <h1 className="font-bold text-5xl">Blog</h1>
             <ul className="flex items-center justify-center space-x-6">
                 <Link to="/">Home</Link>
-                <Link to="/create">New Blog</Link>
+                <Link to="/newblog">New Blog</Link>
             </ul>
         </nav>
      );

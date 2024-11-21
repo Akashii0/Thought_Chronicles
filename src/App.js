@@ -1,6 +1,7 @@
 import {BrowserRouter as Router, Routes,Route } from "react-router-dom";
 import Navbar from "./components/navBar";
 import Home from "./pages/home"
+import NewBlog from "./pages/newBlogs";
 
 
 function App() {
@@ -8,8 +9,8 @@ function App() {
     <Router>
       <Navbar/>
       <Routes>
-        <Route path="/" element={<Home/>}/>
-        {/* <Route element={<Home/>}/> */}
+        <Route exact path="/" element={<Home/>}/>
+        <Route path="newblog" element={<NewBlog/>}/>
 
       </Routes>
     </Router>

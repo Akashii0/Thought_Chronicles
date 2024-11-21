@@ -1,26 +1,17 @@
-import axios from "axios";
-import { useState,useEffect } from "react";
-import BlogList from "../components/blogList";
 
+//import { useState,useEffect } from "react";
+import BlogList from "../components/blogList";
+import UseFetch from "../components/useFetch";
+// import Loader from "../components/Loader" 
 
 
 const Home = () => {
-const [blogs, setBlogs] = useState([])
-    useEffect (() => {
-        axios.get("http://localhost:8000/blogs")
-        .then(res =>{
-            setBlogs(res.data)
-        })
-        
-        .catch(err =>{
-            console.log(err)
-        })
-        
-    },[])
+    const {data:blogs ,loading,error} = UseFetch("http://localhost:8000/blogs")
     return ( 
-        <div className="mt-40">
-            
-            {blogs && <BlogList blogs={blogs} title={"All Blogs"}/>}
+        <div className="">
+            {error &&<p>{error}</p>}
+            {loading && <div className="text-5xl text-center uppercase">Loading...</div>}
+            {blogs && <BlogList blogs={blogs} title="All Blogs"/>}
         </div>
      );
 }
