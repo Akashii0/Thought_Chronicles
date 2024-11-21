@@ -1,4 +1,5 @@
 from datetime import datetime
+from typing import Optional
 # from typing import Optional
 
 from fastapi import Form
@@ -57,4 +58,10 @@ class Token(BaseModel):
 
 class TokenData(BaseModel):
     id: str | None = None
+    token_type: Optional[str] = None
     # id: Optional[str] = None
+    
+class TokenResponse(BaseModel):
+    access_token: str
+    refresh_token: str
+    token_type: str = "bearer"
