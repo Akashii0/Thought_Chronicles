@@ -1,16 +1,17 @@
 import {BrowserRouter as Router, Routes,Route } from "react-router-dom";
-import Navbar from "./components/navBar";
+import MainLayout from "./components/mainLayout";
 import Home from "./pages/home"
 import NewBlog from "./pages/newBlogs";
+import AuthForm from "./AuthForm";
 
 
 function App() {
   return (
     <Router>
-      <Navbar/>
       <Routes>
-        <Route exact path="/" element={<Home/>}/>
-        <Route path="newblog" element={<NewBlog/>}/>
+      <Route exact path="/" element={<AuthForm/>}/>
+        <Route  path="/home" element={<MainLayout><Home/></MainLayout>}/>
+        <Route path="newblog" element={<MainLayout><NewBlog/></MainLayout>}/>
 
       </Routes>
     </Router>

@@ -16,7 +16,7 @@ const NewBlog = () => {
         .then(()=>{
             setIspending(false);
             navigate("/");
-            console.log("newblog")
+            console.log("blogs")
         })
         .catch((error) => {
             console.error("There was an error creating the blog post!", error);
