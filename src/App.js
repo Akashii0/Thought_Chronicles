@@ -3,6 +3,7 @@ import MainLayout from "./components/mainLayout";
 import Home from "./pages/home"
 import NewBlog from "./pages/newBlogs";
 import AuthForm from "./AuthForm";
+import BlogDetails from "./components/blogDetails";
 
 
 function App() {
@@ -12,7 +13,7 @@ function App() {
       <Route exact path="/" element={<AuthForm/>}/>
         <Route  path="/home" element={<MainLayout><Home/></MainLayout>}/>
         <Route path="newblog" element={<MainLayout><NewBlog/></MainLayout>}/>
-
+        <Route path="/blogs/:id" element={<MainLayout><BlogDetails/></MainLayout>}/>
       </Routes>
     </Router>
   );
