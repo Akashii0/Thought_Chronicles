@@ -1,11 +1,12 @@
 import { useState, useEffect } from 'react';
 import api from './api/axiosConfig';
 import './style/AuthForm.css';
-
+import { useNavigate } from 'react-router-dom';
 const AuthForm = () => {
   const [isLoginForm, setIsLoginForm] = useState(true);
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
-    username: '',
+    author: '',
     password: '',
   });
   const [loading, setLoading] = useState(false);
@@ -45,7 +46,7 @@ const AuthForm = () => {
     
     api.post(endpoint, 
       new URLSearchParams({
-        author: formData.username,
+        author: formData.author,
         password: formData.password,
       }), 
       {
@@ -56,7 +57,7 @@ const AuthForm = () => {
     )
     .then(response => {
       if (response.data) {
-        window.location.href = '/dashboard';
+        navigate('/home');
       }
     })
     .catch(error => {
@@ -122,7 +123,7 @@ const AuthForm = () => {
             <div className="field">
               <input
                 type="text"
-                name="username"
+                name="author"
                 placeholder="Username"
                 value={formData.username}
                 onChange={handleInputChange}
