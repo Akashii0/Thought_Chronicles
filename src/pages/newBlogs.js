@@ -21,6 +21,7 @@ const NewBlog = () => {
         .catch((error) => {
             console.error("There was an error creating the blog post!", error);
             setIspending(false);
+            
         });
     }
 
