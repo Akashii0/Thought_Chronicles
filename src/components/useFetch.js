@@ -32,6 +32,7 @@ const UseFetch = (url) => {
                         console.error('Unexpected error:', err);
                         setError('An unexpected error occurred');
                     }
+                    setLoading(false)
                 });
         }, 3000);
 
