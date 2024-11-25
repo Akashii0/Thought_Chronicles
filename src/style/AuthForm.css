@@ -5,13 +5,7 @@
   box-sizing: border-box;
   font-family: 'Poppins', sans-serif;
 }
-html,body{
-  display: grid;
-  height: 100%;
-  width: 100%;
-  place-items: center;
-  /* background: linear-gradient(-20deg, #2b5876 0%, #4e4376 100%); */
-}
+
 ::selection{
   background: #1a75ff;
   color: #fff;

@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import Annotated, Optional
 from fastapi import (
     APIRouter,
     Cookie,
@@ -8,6 +8,7 @@ from fastapi import (
     Response,
     status,
 )
+from fastapi.security.oauth2 import OAuth2PasswordRequestForm
 from fastapi.responses import JSONResponse
 from fastapi.staticfiles import StaticFiles
 from sqlalchemy.orm import Session
@@ -23,17 +24,16 @@ router.mount("/static", StaticFiles(directory="static", html=True), name="static
 
 @router.post("/login", response_model=schemas.Token)
 def login(
-    author: str = Form(...),
-    password: str = Form(...),
+    form_data:  Annotated[OAuth2PasswordRequestForm, Depends()],
     db: Session = Depends(database.get_db),
 ):
-    user = db.query(models.User).filter(models.User.author == author).first()
+    user = db.query(models.User).filter(models.User.author == form_data.username).first()
     if not user:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN, detail="This User does not exist"
         )
 
-    if not utils.verify(password, user.password):
+    if not utils.verify(form_data.password, user.password):
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN, detail="Invalid Credentials"
         )
@@ -60,7 +60,8 @@ def login(
         httponly=True,
         secure=True,
         samesite="lax",
-        max_age=oauth2.ACCESS_TOKEN_EXPIRE_MINUTES * 60  # Convert to seconds
+        max_age=oauth2.ACCESS_TOKEN_EXPIRE_MINUTES * 60,  # Convert to seconds
+        path="/"
     )
     
     response.set_cookie(
