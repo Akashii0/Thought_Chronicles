@@ -6,7 +6,7 @@ const AuthForm = () => {
   const [isLoginForm, setIsLoginForm] = useState(true);
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
-    author: '',
+    username: '',
     password: '',
   });
   const [loading, setLoading] = useState(false);
@@ -46,10 +46,11 @@ const AuthForm = () => {
     
     api.post(endpoint, 
       new URLSearchParams({
-        author: formData.author,
+        username: formData.username,
         password: formData.password,
       }), 
       {
+        withCredentials: true,
         headers: {
           'Content-Type': 'application/x-www-form-urlencoded',
         },
@@ -57,6 +58,7 @@ const AuthForm = () => {
     )
     .then(response => {
       if (response.data) {
+        localStorage.setItem('isAuthenticated', 'true');
         navigate('/home');
       }
     })
@@ -124,7 +126,7 @@ const AuthForm = () => {
               <div className="field">
                 <input
                   type="text"
-                  name="author"
+                  name="username"
                   placeholder="Username"
                   value={formData.username}
                   onChange={handleInputChange}

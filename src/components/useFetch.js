@@ -5,8 +5,7 @@ const UseFetch = (url) => {
     const [error, setError] = useState(null);
     const [loading, setLoading] = useState(true);
     useEffect(() => {
-        setTimeout(() => {
-            axios.get(url)
+        axios.get(url)
                 .then(res => {
                     // Check if the response status is not in the 200 range
                     if (res.status < 200 || res.status >= 300) {
@@ -34,7 +33,6 @@ const UseFetch = (url) => {
                     }
                     setLoading(false)
                 });
-        }, 3000);
 
     }, [url]);
     return {data,loading,error}

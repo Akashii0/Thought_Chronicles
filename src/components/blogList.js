@@ -9,7 +9,7 @@ const BlogList = ({blogs,title}) => {
             {blogs.map((blog)=>(
                 <div  key={blog.id} className="mt-10 bg-white shadow p-5 space-y-5">
                     <h2 className="text-4xl text-blue-600 font-sans font-black">{blog.title}</h2>
-                    <p>Written by: {blog.author}</p>
+                    <p>Written by: {blog.owner.author}</p>
                 </div>
             ))}
 

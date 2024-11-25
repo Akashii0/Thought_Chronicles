@@ -1,6 +1,8 @@
-import axios from "axios";
+// import axios from "axios";
 import {  useState } from "react";
 import { useNavigate } from "react-router-dom";
+import api from '../api/axiosConfig';  // Import the configured axios instance
+
 const NewBlog = () => {
     const [title,setTitle] = useState("")
     const [body,setBody] = useState("")
@@ -8,41 +10,25 @@ const NewBlog = () => {
     const navigate = useNavigate();
 
     const handleSubmit=(e)=>{
-        const post = {
-         title, body};
-        e.preventDefault()
-        setIspending(true)
-        axios.post('http://localhost:8000/blogs',post)
-        .then(()=>{
+        e.preventDefault();
+        const post = { title, body };
+        setIspending(true);
+
+        api.post('/blogs', post, {
+            withCredentials: true,  // Ensure credentials are sent
+        })
+        .then(() => {
             setIspending(false);
-            navigate("/");
-            console.log("blogs")
+            navigate("/home");
+            console.log("blog posted successfully");
         })
         .catch((error) => {
             console.error("There was an error creating the blog post!", error);
             setIspending(false);
-            
+            navigate("/");
         });
     }
 
-    // const handleSubmit =(e) =>{
-    //     e.preventDefault();
-    //     const blog ={title,body}
-        
-    //     setIspending(true)
-
-    //     fetch('http://localhost:8000/blogs',{
-    //         method: 'POST',
-    //         headers:{"content-Type":"application/json"},
-    //         body: JSON.stringify(blog)
-    //     }).then(()=>{
-    //         console.log("new blog added")
-    //         setIspending(false)
-    //         navigate('/');
-    //     })
-
-        
-    // }
 
     return ( 
         
