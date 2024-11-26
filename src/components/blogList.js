@@ -12,7 +12,7 @@ const BlogList = ({blogs,title}) => {
                
                     <div  key={blog.id} className="mt-10 bg-white shadow p-5 space-y-5">
                          <Link to={`/blogs/${blog.id}`}>
-                        <h2 className="text-4xl text-blue-600 font-sans font-black">{blog.title}</h2>
+                        <h2 className="text-4xl text-text-color font-sans font-black">{blog.title}</h2>
                         <p>Written by: {blog.owner.author}</p>
                         </Link>
                     </div>

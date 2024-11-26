@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
-import api from './api/axiosConfig';
-import './style/AuthForm.css';
+import api from '../api/axiosConfig';
+import './AuthForm.css';
 import { useNavigate } from 'react-router-dom';
 const AuthForm = () => {
   const [isLoginForm, setIsLoginForm] = useState(true);
@@ -75,8 +75,8 @@ const AuthForm = () => {
     <div className='h-screen w-screen flex justify-center items-center'>
       <div className="wrapper ">
         <div className="title-text" style={titleStyle}>
-          <div className="title login">Akashi ToDo</div>
-          <div className="title signup">Signup Form</div>
+          <div className="title login">Thought Chronicles</div>
+          <div className="title signup">Signup</div>
         </div>
         <div className="form-container">
           <div className="slide-controls">
@@ -148,9 +148,9 @@ const AuthForm = () => {
               
               {isLoginForm && (
                 <div className="pass-link">
-                  <a href="#" onClick={(e) => e.preventDefault()}>
+                  <button onClick={(e) => e.preventDefault()}>
                     Forgot password?
-                  </a>
+                  </button>
                 </div>
               )}
               
@@ -166,15 +166,15 @@ const AuthForm = () => {
               {isLoginForm && (
                 <div className="signup-link">
                   Not a member?{' '}
-                  <a 
-                    href="#" 
+                  <button
+                  
                     onClick={(e) => {
                       e.preventDefault();
                       setIsLoginForm(false);
                     }}
                   >
                     Signup now
-                  </a>
+                  </button>
                 </div>
               )}
             </form>

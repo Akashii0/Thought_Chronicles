@@ -2,7 +2,7 @@ import {BrowserRouter as Router, Routes,Route } from "react-router-dom";
 import MainLayout from "./components/mainLayout";
 import Home from "./pages/home"
 import NewBlog from "./pages/newBlogs";
-import AuthForm from "./AuthForm";
+import AuthForm from "./login/AuthForm";
 import BlogDetails from "./components/blogDetails";
 
 
