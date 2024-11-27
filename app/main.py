@@ -12,12 +12,6 @@ models.Base.metadata.create_all(bind=engine)
 
 app = FastAPI()
 
-app.mount("/static", StaticFiles(directory="static", html=True), name="static")
-
-
-templates = Jinja2Templates(directory="templates")
-
-
 origins = ["http://localhost:3000", 
            "http://localhost:3001"]
 
