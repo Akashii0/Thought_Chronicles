@@ -10,7 +10,7 @@ from sqlalchemy.orm import Session
 
 router = APIRouter(
     tags=['Blogs'],
-    prefix="/blogs"
+    prefix="/api/blogs"
 )
 
 templates = Jinja2Templates(directory="templates")

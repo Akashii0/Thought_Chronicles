@@ -11,7 +11,11 @@ import app.models as models
 import app.utils as utils
 from app.database import get_db
 
-router = APIRouter(tags=["Users"])
+router = APIRouter(
+    tags=["Users"],
+    prefix="/api"
+    )
+
 
 
 @router.post("/users")

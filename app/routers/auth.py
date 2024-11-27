@@ -16,7 +16,11 @@ import app.oauth2 as oauth2
 import app.schemas as schemas
 import app.utils as utils
 
-router = APIRouter(tags=["Authentication"])
+router = APIRouter(
+    tags=["Authentication"],
+    prefix="/api"
+)
+
 
 
 @router.post("/login", response_model=schemas.Token)
