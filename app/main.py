@@ -10,13 +10,14 @@ models.Base.metadata.create_all(bind=engine)
 
 app = FastAPI()
 
-origins = ["http://localhost:3000", 
-           "http://localhost:3001",
-           "http://tc.a.7o7.cx:3000",
-           "http://localhost:3000/api",
-           "http://localhost:3001/api",
-           "http://tc.a.7o7.cx:3000/api",
-           "http://a.7o7.cx:3000"]
+# origins = ["http://localhost:3000", 
+#            "http://localhost:3001",
+#            "http://tc.a.7o7.cx:3000",
+#            "http://localhost:3000/api",
+#            "http://localhost:3001/api",
+#            "http://tc.a.7o7.cx:3000/api",
+#            "http://a.7o7.cx:3000"]
+origins = ["*"]
 
 app.add_middleware(
     CORSMiddleware,
