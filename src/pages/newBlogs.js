@@ -45,7 +45,7 @@ const NewBlog = () => {
 
             </div>
             <div className="flex flex-col space-y-2 w-[50%]">
-                <label>Body</label>
+                <label>Blog Content</label>
                 <textarea
                 className="w-full h-44 rounded-2xl indent-5"
                 type="text"

@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import api from "../api/axiosConfig";
 import { useNavigate } from "react-router-dom";
+import bg from "../images/logo-1-bg.png"
 
 
 const Navbar = () => {
@@ -17,12 +18,12 @@ const Navbar = () => {
     };
 
     return ( 
-        <nav className="w-[80%] m-auto flex justify-between items-center">
-            <h1 className="font-bold text-5xl">Blog</h1>
+        <nav className="w-[80%] mt-5 m-auto flex justify-between items-center">
+            <img src={bg} alt="logo" className="w-20 h-20 rounded-full" />
             <ul className="flex items-center justify-center space-x-6">
-                <Link to="/home">Home</Link>
-                <Link to="/newblog">New Blog</Link>
-                <Link to="/logout" onClick={handleLogout}>Logout</Link>
+                <Link className="uppercase" to="/home">Home</Link>
+                <Link className="uppercase" to="/newblog">New Blog</Link>
+                <Link className="uppercase" to="/logout" onClick={handleLogout}>Logout</Link>
             </ul>
         </nav>
      );

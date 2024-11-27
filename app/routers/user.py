@@ -1,4 +1,6 @@
 # from sqlite3 import IntegrityError
+from fastapi.security.oauth2 import OAuth2PasswordRequestForm
+from typing_extensions import Annotated
 from sqlalchemy.exc import IntegrityError
 from fastapi import APIRouter, Depends, Form, HTTPException, Request, status
 from fastapi.responses import JSONResponse, RedirectResponse
@@ -14,14 +16,13 @@ router = APIRouter(tags=["Users"])
 
 @router.post("/users")
 def create_user(
+    form_data:  Annotated[OAuth2PasswordRequestForm, Depends()],
     request: Request,
     db: Session = Depends(get_db),
-    author: str = Form(),
-    password: str = Form(),
 ):
 
-    hashed_password = utils.hash(password)
-    existing_user = db.query(models.User).filter(models.User.author == author).first()
+    hashed_password = utils.hash(form_data.password)
+    existing_user = db.query(models.User).filter(models.User.author == form_data.username).first()
     if existing_user:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
@@ -29,7 +30,7 @@ def create_user(
         )
 
     # new_user = User(**user.model_dump(username=username, password=password))
-    new_user = models.User(author=author, password=hashed_password)
+    new_user = models.User(author=form_data.username, password=hashed_password)
     try:
         db.add(new_user)
         db.commit()
@@ -42,7 +43,7 @@ def create_user(
             detail="Author already exists"
         )
 
-    access_token = oauth2.create_access_token(data={"user_id": author})
+    access_token = oauth2.create_access_token(data={"user_id": form_data.username})
     # print(new_user)
     # return RedirectResponse(url="/login")
     
@@ -57,7 +58,7 @@ def create_user(
     response = JSONResponse(
         content={
             "message": "User Created Successfully",
-            "author": author
+            "author": form_data.username
         }
     )
 
