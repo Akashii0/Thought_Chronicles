@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const api = axios.create({
-  baseURL: 'http://tc.a.7o7.cx:3000/api',  // Your FastAPI backend URL
+  baseURL: 'http://localhost:3000',  // Your FastAPI backend URL
   withCredentials: true,
   headers: {
     'Content-Type': 'application/x-www-form-urlencoded',
@@ -23,7 +23,7 @@ api.interceptors.response.use(
       originalRequest._retry = true;
 
       try {
-        await api.post('/refresh');
+        await api.post('api/refresh');
         return api(originalRequest);
       } catch (refreshError) {
         window.location.href = '/';

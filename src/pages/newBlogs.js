@@ -14,7 +14,7 @@ const NewBlog = () => {
         const post = { title, body };
         setIspending(true);
 
-        api.post('/blogs', post, {
+        api.post('/api/blogs', post, {
             withCredentials: true,  // Ensure credentials are sent
         })
         .then(() => {
