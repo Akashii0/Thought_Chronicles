@@ -2,7 +2,6 @@ from fastapi import Form, HTTPException, Request, Depends, status, APIRouter
 from typing import List
 # from fastapi.responses import RedirectResponse
 from fastapi.templating import Jinja2Templates
-from fastapi.staticfiles import StaticFiles
 import app.models as models
 import app.oauth2 as oauth2
 import app.schemas as schemas
@@ -13,7 +12,6 @@ router = APIRouter(
     tags=['Blogs'],
     prefix="/blogs"
 )
-router.mount('/static', StaticFiles(directory='static', html=True), name="static")
 
 templates = Jinja2Templates(directory="templates")
 

@@ -3,14 +3,12 @@ from fastapi import (
     APIRouter,
     Cookie,
     Depends,
-    Form,
     HTTPException,
     Response,
     status,
 )
 from fastapi.security.oauth2 import OAuth2PasswordRequestForm
 from fastapi.responses import JSONResponse
-from fastapi.staticfiles import StaticFiles
 from sqlalchemy.orm import Session
 import app.database as database
 import app.models as models
@@ -19,7 +17,6 @@ import app.schemas as schemas
 import app.utils as utils
 
 router = APIRouter(tags=["Authentication"])
-router.mount("/static", StaticFiles(directory="static", html=True), name="static")
 
 
 @router.post("/login", response_model=schemas.Token)
