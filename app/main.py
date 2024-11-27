@@ -4,7 +4,6 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from sqlalchemy.orm import Session
 import app.models as models
-import app.schemas as schemas
 from app.database import engine, get_db
 from app.routers import crud, auth, user
 
