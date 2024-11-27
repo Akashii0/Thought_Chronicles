@@ -7,8 +7,8 @@ const BlogDetails = () => {
     const {data:blog,loading,error} = UseFetch(`http://localhost:8000/blogs/${id}`);
     return ( 
         <div>
-            {loading && <div>Loading...</div>}
-            {error && <div>{error}</div>}
+            {loading && <div className="text-3xl     mt-40 w-[80%] m-auto flex flex-col gap-5 justify-center items-center">Loading...</div>}
+            {error && <div className="text-4xl uppercase mt-40 w-[80%] m-auto flex flex-col gap-5 justify-center items-center">{error}</div>}
             {blog && (<article className="mt-40 w-[80%] m-auto flex flex-col gap-5 justify-center items-center">
                     <h2 className="text-4xl font-black">{blog.title}</h2>
                     <div>{blog.body}</div>
