@@ -10,14 +10,14 @@ models.Base.metadata.create_all(bind=engine)
 
 app = FastAPI()
 
-# origins = ["http://localhost:3000", 
-#            "http://localhost:3001",
-#            "http://tc.a.7o7.cx:3000",
-#            "http://localhost:3000/api",
-#            "http://localhost:3001/api",
-#            "http://tc.a.7o7.cx:3000/api",
-#            "http://a.7o7.cx:3000"]
-origins = ["*"]
+origins = [
+    "http://localhost:3000",
+    "https://localhost:3000",
+    "http://tc.a.7o7.cx:3000",
+    "https://tc.a.7o7.cx:3000",
+    "http://a.7o7.cx:3000",
+    "https://a.7o7.cx:3000",
+]
 
 app.add_middleware(
     CORSMiddleware,
@@ -31,7 +31,7 @@ app.include_router(crud.router)
 app.include_router(auth.router)
 app.include_router(user.router)
 
+
 @app.get("/")
 def read_root(db: Session = Depends(get_db)):
     return {"Hello": "World"}
-        
