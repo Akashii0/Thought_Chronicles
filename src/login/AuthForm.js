@@ -42,7 +42,7 @@ const AuthForm = () => {
     setLoading(true);
     setError(null);
     
-    const endpoint = isLoginForm ? '/login' : '/users';
+    const endpoint = isLoginForm ? '/api/login' : '/api/users';
     
     api.post(endpoint, 
       new URLSearchParams({

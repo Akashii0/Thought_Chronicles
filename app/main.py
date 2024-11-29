@@ -1,7 +1,5 @@
 from fastapi import FastAPI, Depends
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.staticfiles import StaticFiles
-from fastapi.templating import Jinja2Templates
 from sqlalchemy.orm import Session
 import app.models as models
 from app.database import engine, get_db
@@ -12,14 +10,14 @@ models.Base.metadata.create_all(bind=engine)
 
 app = FastAPI()
 
-app.mount("/static", StaticFiles(directory="static", html=True), name="static")
-
-
-templates = Jinja2Templates(directory="templates")
-
-
-origins = ["http://localhost:3000", 
-           "http://localhost:3001"]
+origins = [
+    "http://localhost:3000",
+    "https://localhost:3000",
+    "http://tc.a.7o7.cx:3000",
+    "https://tc.a.7o7.cx:3000",
+    "http://a.7o7.cx:3000",
+    "https://a.7o7.cx:3000",
+]
 
 
 app.add_middleware(
@@ -34,7 +32,7 @@ app.include_router(crud.router)
 app.include_router(auth.router)
 app.include_router(user.router)
 
+
 @app.get("/")
 def read_root(db: Session = Depends(get_db)):
     return {"Hello": "World"}
-        
