@@ -60,7 +60,7 @@ def login(
         value=access_token,
         httponly=True,
         secure=True,
-        samesite="lax",
+        samesite="none",
         max_age=oauth2.ACCESS_TOKEN_EXPIRE_MINUTES * 60,  # Convert to seconds
         path="/"
     )
@@ -70,7 +70,7 @@ def login(
         value=refresh_token,
         httponly=True,
         secure=True,
-        samesite="lax",
+        samesite="none",
         max_age=oauth2.REFRESH_TOKEN_EXPIRE_DAYS * 24 * 60 * 60  # Convert to seconds
     )
 
@@ -125,7 +125,7 @@ def refresh_token(
         value=new_access_token,
         httponly=True,
         secure=True,
-        samesite="lax",
+        samesite="none",
         max_age=oauth2.ACCESS_TOKEN_EXPIRE_MINUTES * 60
     )
 
