@@ -118,7 +118,7 @@ const AuthForm = () => {
               style={formStyle}
             >
               {error && (
-                <div className="error-message">
+                <div className=" text-red-500">
                   {error}
                 </div>
               )}
