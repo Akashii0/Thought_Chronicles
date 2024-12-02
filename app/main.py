@@ -35,3 +35,7 @@ app.include_router(user.router)
 @app.get("/")
 def read_root(db: Session = Depends(get_db)):
     return {"Hello": "World"}
+
+@app.get('/api')
+def index():
+    return {"Hewwwo":"Testing SSL Certificatesss. hehe"}
