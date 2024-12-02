@@ -17,7 +17,13 @@ origins = [
     "https://tc.a.7o7.cx:3000",
     "http://a.7o7.cx:3000",
     "https://a.7o7.cx:3000",
+    "https://thought-chronicle-babalola-victor-s-projects.vercel.app",
+    "https://thought-chronicle-git-main-babalola-victor-s-projects.vercel.app",
+    "https://thought-chronicle.vercel.app",
+    "https://vercel.com/babalola-victor-s-projects/thought-chronicle/3QBQjSU4XremZqQdnHATWiFjBfoJ"
+
 ]
+
 
 app.add_middleware(
     CORSMiddleware,

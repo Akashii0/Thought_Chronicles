@@ -58,6 +58,10 @@ const AuthForm = () => {
     )
     .then(response => {
       if (response.data) {
+        const token = response.data.token;
+        localStorage.setItem('authToken', token);
+        console.log('Token stored:', token);
+        
         localStorage.setItem('isAuthenticated', 'true');
         navigate('/home');
       }
@@ -118,7 +122,7 @@ const AuthForm = () => {
               style={formStyle}
             >
               {error && (
-                <div className="error-message">
+                <div className=" text-red-500">
                   {error}
                 </div>
               )}
