@@ -8,6 +8,7 @@ import app.schemas as schemas
 from app.database import get_db
 from sqlalchemy.orm import Session  
 
+
 router = APIRouter(
     tags=['Blogs'],
     prefix="/api/blogs"

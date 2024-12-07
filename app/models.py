@@ -12,6 +12,7 @@ class User(Base):
     password = Column(String, nullable=False)
     created_at = Column(TIMESTAMP(timezone=True), nullable=False,
                         server_default=text('CURRENT_TIMESTAMP'))
+    profile_picture = Column(String, nullable=True)
     
 class Blog(Base):
     __tablename__ = "blogs"
