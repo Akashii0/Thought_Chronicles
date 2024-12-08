@@ -74,7 +74,7 @@ def create_user(
         value=access_token,
         httponly=True,  # Prevents JavaScript access
         secure=True,    # Only sends cookie over HTTPS
-        samesite="lax", # Provides CSRF protection
+        samesite="none", # Provides CSRF protection
         max_age=1800    # 30 minutes in seconds
     )
 
