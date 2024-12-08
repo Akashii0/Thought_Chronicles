@@ -102,11 +102,16 @@ async def upload_profile_picture(
     user_id: int,
     file: UploadFile = File(...),
     db: Session = Depends(get_db),
+    current_user: int = Depends(oauth2.get_current_user)
 ):
     
     user = db.query(models.User).filter(models.User.id == user_id).first()
     if not user:
         raise HTTPException(status_code=404, detail="User not found.")
+    
+    if user_id != current_user.id:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN,
+                            detail="Not authorized to perform requested action")
     
     # Validate file type, IF its an img or video/music. hehe
     if not file.content_type.startswith("image/"):
