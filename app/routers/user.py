@@ -120,7 +120,8 @@ async def upload_profile_picture(
 
     # Generate unique file name for each uploaded pfp 
     unique_filename = f"{uuid.uuid4()}_{file.filename}"
-    file_path = UPLOAD_DIR / f"{user_id}_{file.filename}"
+    file_path = UPLOAD_DIR / unique_filename
+    # file_path = UPLOAD_DIR / f"{user_id}_{file.filename}"
     with file_path.open("wb") as buffer:
         shutil.copyfileobj(file.file, buffer)
 
