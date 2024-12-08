@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, ForeignKey
+from sqlalchemy import Column, Integer, String, ForeignKey, Boolean
 from sqlalchemy.sql.sqltypes import TIMESTAMP
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql.expression import text
@@ -13,6 +13,7 @@ class User(Base):
     created_at = Column(TIMESTAMP(timezone=True), nullable=False,
                         server_default=text('CURRENT_TIMESTAMP'))
     profile_picture = Column(String, nullable=True)
+    is_admin = Column(Boolean, default=False)
     
 class Blog(Base):
     __tablename__ = "blogs"
