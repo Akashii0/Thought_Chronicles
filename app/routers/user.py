@@ -117,18 +117,18 @@ async def upload_profile_picture(
     if not file.content_type.startswith("image/"):
         raise HTTPException(status_code=400, detail="Only image files are allowed.")
     
-    # Delete old profile picture if it exists
-    if user.profile_picture:
-        old_file_path = Path(user.profile_picture)
-    if old_file_path.exists():
-        old_file_path.unlink()  # Deletes the file
-
     # Generate unique file name for each uploaded pfp 
     unique_filename = f"{uuid.uuid4()}_{file.filename}"
     file_path = UPLOAD_DIR / unique_filename
     # file_path = UPLOAD_DIR / f"{user_id}_{file.filename}"
     with file_path.open("wb") as buffer:
         shutil.copyfileobj(file.file, buffer)
+    
+    # Delete old profile picture if it exists
+    if user.profile_picture:
+        old_file_path = Path(user.profile_picture)
+    if old_file_path.exists():
+        old_file_path.unlink()  # Deletes the file
 
 
     # Update the database with newly generated unique file name/path
