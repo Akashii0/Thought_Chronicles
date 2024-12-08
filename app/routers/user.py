@@ -12,6 +12,7 @@ from app.database import get_db
 from pathlib import Path
 import shutil
 import uuid
+import os
 
 router = APIRouter(
     tags=["Users"],
@@ -117,23 +118,38 @@ async def upload_profile_picture(
     if not file.content_type.startswith("image/"):
         raise HTTPException(status_code=400, detail="Only image files are allowed.")
     
-    # Generate unique file name for each uploaded pfp 
-    unique_filename = f"{uuid.uuid4()}_{file.filename}"
-    file_path = UPLOAD_DIR / unique_filename
-    # file_path = UPLOAD_DIR / f"{user_id}_{file.filename}"
-    with file_path.open("wb") as buffer:
-        shutil.copyfileobj(file.file, buffer)
-    
-    # Delete old profile picture if it exists
-    if user.profile_picture:
-        old_file_path = Path(user.profile_picture)
-    if old_file_path.exists():
-        old_file_path.unlink()  # Deletes the file
+    # # Delete old profile picture if it exists
+    # if user.profile_picture:
+    #     old_file_path = Path(user.profile_picture)
+    # if old_file_path.exists():
+    #     old_file_path.unlink()  # Deletes the file
 
+    try:
+        # Retrieve the old profile picture path
+        old_file_path = user.profile_picture
+        
+        # If the old profile picture exists, remove it
+        if old_file_path and os.path.exists(old_file_path):
+            os.remove(old_file_path)
 
-    # Update the database with newly generated unique file name/path
-    user.profile_picture = str(file_path)
-    db.commit()
-    db.refresh(user)
+        # Generate a unique file name for the new profile picture
+        unique_filename = f"{uuid.uuid4()}_{file.filename}"
+        file_path = UPLOAD_DIR / unique_filename
 
-    return {"message": "Profile picture updated successfully.", "profile_picture": str(file_path)}
+        # Save the new profile picture
+        with file_path.open("wb") as buffer:
+            shutil.copyfileobj(file.file, buffer)
+
+        # Update the user's profile picture path
+        user.profile_picture = str(file_path)
+
+        # Update the database with newly generated unique file name/path
+        user.profile_picture = str(file_path)
+        db.commit()
+        db.refresh(user)
+
+        return {"message": "Profile picture updated successfully.", "profile_picture": str(file_path)}
+
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"An error occurred: {e}")
+
