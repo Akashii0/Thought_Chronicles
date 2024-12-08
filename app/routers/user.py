@@ -11,6 +11,7 @@ import app.utils as utils
 from app.database import get_db
 from pathlib import Path
 import shutil
+import uuid
 
 router = APIRouter(
     tags=["Users"],
@@ -102,20 +103,29 @@ async def upload_profile_picture(
     file: UploadFile = File(...),
     db: Session = Depends(get_db),
 ):
-    # Validate file type
-    if not file.content_type.startswith("image/"):
-        raise HTTPException(status_code=400, detail="Only image files are allowed.")
-
-    # Generate unique file name
-    file_path = UPLOAD_DIR / f"{user_id}_{file.filename}"
-    with file_path.open("wb") as buffer:
-        shutil.copyfileobj(file.file, buffer)
-
-    # Update the database
+    
     user = db.query(models.User).filter(models.User.id == user_id).first()
     if not user:
         raise HTTPException(status_code=404, detail="User not found.")
     
+    # Validate file type, IF its an img or video/music. hehe
+    if not file.content_type.startswith("image/"):
+        raise HTTPException(status_code=400, detail="Only image files are allowed.")
+    
+    # Delete old profile picture if it exists
+    if user.profile_picture:
+        old_file_path = Path(user.profile_picture)
+    if old_file_path.exists():
+        old_file_path.unlink()  # Deletes the file
+
+    # Generate unique file name for each uploaded pfp 
+    unique_filename = f"{uuid.uuid4()}_{file.filename}"
+    file_path = UPLOAD_DIR / f"{user_id}_{file.filename}"
+    with file_path.open("wb") as buffer:
+        shutil.copyfileobj(file.file, buffer)
+
+
+    # Update the database with newly generated unique file name/path
     user.profile_picture = str(file_path)
     db.commit()
     db.refresh(user)
