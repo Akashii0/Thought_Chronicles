@@ -1,9 +1,9 @@
 from datetime import datetime
-from typing import Optional
+from typing import Annotated, Optional
 # from typing import Optional
 
 from fastapi import Form
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 # from typing_extensions import Annotated
 
 class BlogBase(BaseModel):
@@ -24,6 +24,7 @@ class BlogResponse(BlogBase):
     created_at: datetime
     owner_id: int
     owner: UserBase
+    Likes: int
 
     class Config:
         from_attributes = True
@@ -48,6 +49,10 @@ class UserLogin(BaseModel):
     author: str = Form()
     password: str = Form()
 
+
+class Like(BaseModel):
+    blog_id: int
+    dir: Annotated[int, Field(le=1)]
 
 # Setting up a schema for the token
 
