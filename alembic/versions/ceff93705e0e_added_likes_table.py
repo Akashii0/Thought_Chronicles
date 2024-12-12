@@ -1,7 +1,7 @@
 """Added likes table
 
 Revision ID: ceff93705e0e
-Revises: d040d92b93e3
+Revises: d040d92b93ed040d92b93e33
 Create Date: 2024-12-12 11:48:45.189745
 
 """
