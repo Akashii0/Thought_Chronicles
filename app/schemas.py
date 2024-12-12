@@ -3,31 +3,45 @@ from typing import Annotated, Literal, Optional
 # from typing import Optional
 
 from fastapi import Form
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, validator
 # from typing_extensions import Annotated
+
 
 class BlogBase(BaseModel):
     title: str
     body: str
 
+
 class BlogCreate(BlogBase):
     pass
 
+
 class UserBase(BaseModel):
     author: str
-    profile_picture: Optional[str]
 
     class Config:
         from_attributes = True
+
 
 class BlogResponse(BlogBase):
     id: int
-    created_at: datetime
     owner_id: int
     owner: UserBase
+    created_at: datetime
+
+    # @validator("created_at", pre=True, always=True)
+    # def format_datetime(cls, value):
+    #     # Ensure it's a datetime object
+    #     if isinstance(value, datetime):
+    #         return value.strftime("%Y-%m-%d %H:%M:%S")
+    #     return value
 
     class Config:
+        json_encoders = {
+            datetime: lambda v: v.strftime("%Y-%m-%d %H:%M:%S")  # Custom format for datetime
+        }
         from_attributes = True
+
 
 class BlogOut(BaseModel):
     Blog: BlogResponse
@@ -35,7 +49,8 @@ class BlogOut(BaseModel):
 
     class Config:
         from_attributes = True
-        
+
+
 class UserCreate(BaseModel):
     author: str = Form()
     password: str = Form()
@@ -74,7 +89,8 @@ class TokenData(BaseModel):
     id: str | None = None
     token_type: Optional[str] = None
     # id: Optional[str] = None
-    
+
+
 class TokenResponse(BaseModel):
     access_token: str
     refresh_token: str
