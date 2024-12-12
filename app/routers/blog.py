@@ -23,7 +23,7 @@ def get_blogs(
     skip: int = 0,
     search: Optional[str] = "",
 ):
-    # blogs = db.query(models.Blog).all()
+    
     blogs = (
         db.query(models.Blog, func.count(models.Like.blog_id).label("Likes"))
         .join(models.Like, models.Like.blog_id == models.Blog.id, isouter=True)
