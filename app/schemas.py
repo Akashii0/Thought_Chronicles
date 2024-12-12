@@ -24,7 +24,7 @@ class BlogResponse(BlogBase):
     created_at: datetime
     owner_id: int
     owner: UserBase
-    
+
     class Config:
         from_attributes = True
 
@@ -34,6 +34,7 @@ class BlogOut(BaseModel):
 
     class Config:
         from_attributes = True
+        
 class UserCreate(BaseModel):
     author: str = Form()
     password: str = Form()
