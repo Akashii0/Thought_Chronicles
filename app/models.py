@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, ForeignKey, Boolean
+from sqlalchemy import Column, Integer, String, ForeignKey, Boolean, UniqueConstraint
 from sqlalchemy.sql.sqltypes import TIMESTAMP
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql.expression import text
@@ -26,3 +26,15 @@ class Blog(Base):
     owner_id = Column(Integer, ForeignKey(
         "users.id", ondelete="CASCADE"), nullable=False)
     owner = relationship("User", backref="blogs")
+
+class Like(Base):
+    __tablename__ = "likes"
+    # id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, ForeignKey(
+        "users.id", ondelete="CASCADE"), primary_key=True)
+    blog_id = Column(Integer, ForeignKey(
+        "blogs.id", ondelete="CASCADE"), primary_key=True)
+    created_at = Column(TIMESTAMP(timezone=True), nullable=False,
+                        server_default=text('CURRENT_TIMESTAMP'))
+
+    __table_args__ = (UniqueConstraint("user_id", "blog_id", name="user_blog_unique"),)

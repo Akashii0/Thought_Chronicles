@@ -22,7 +22,6 @@ router = APIRouter(
 )
 
 
-
 @router.post("/login", response_model=schemas.Token)
 def login(
     form_data:  Annotated[OAuth2PasswordRequestForm, Depends()],
@@ -31,7 +30,8 @@ def login(
     user = db.query(models.User).filter(models.User.author == form_data.username).first()
     if not user:
         raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN, detail="This User does not exist"
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="This User does not exist"
         )
 
     if not utils.verify(form_data.password, user.password):
