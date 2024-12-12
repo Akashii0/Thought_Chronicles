@@ -30,7 +30,7 @@ def get_blogs(
         .group_by(models.Blog.id)
         .filter(
             or_(
-                models.Blog.title.contains(search), 
+                models.Blog.title.contains(search),
                 models.Blog.body.contains(search)
             )
         )
