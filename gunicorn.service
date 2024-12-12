@@ -1,0 +1,14 @@
+[Unit]
+Description=TC
+After=network.target
+
+[Service]
+User=xen
+Group=xen
+WorkingDirectory=/home/xen/tc/src/
+Environment="PATH=/home/xen/tc/venv/bin"
+EnvironmentFile=/home/xen/.tc
+ExecStart=/home/xen/tc/venv/bin/gunicorn -w 1 -k uvicorn.workers.UvicornWorker main:app --bind 0.0.0.0:3000
+
+[install]
+WantedBy=multi-user.target 
