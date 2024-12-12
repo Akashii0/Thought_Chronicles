@@ -1,40 +1,44 @@
-from fastapi import Form, HTTPException, Request, Depends, status, APIRouter
 from typing import List, Optional
 
+from fastapi import APIRouter, Depends, Form, HTTPException, Request, status
+
 # from fastapi.responses import RedirectResponse
-from fastapi.templating import Jinja2Templates
+from sqlalchemy import func, or_
+from sqlalchemy.orm import Session
+
 import app.models as models
 import app.oauth2 as oauth2
 import app.schemas as schemas
 from app.database import get_db
-from sqlalchemy import func
-from sqlalchemy.orm import Session
-
 
 router = APIRouter(tags=["Blogs"], prefix="/api/blogs")
 
-templates = Jinja2Templates(directory="templates")
+# templates = Jinja2Templates(directory="templates")
 
 
-@router.get("/", response_model=List[schemas.BlogResponse])
+@router.get("/", response_model=List[schemas.BlogOut])
 def get_blogs(
-    request: Request,
     db: Session = Depends(get_db),
-    limit: int = 10, 
+    limit: int = 10,
     skip: int = 0,
-    search: Optional[str] = ""
+    search: Optional[str] = "",
 ):
-    
     # blogs = db.query(models.Blog).all()
     blogs = (
         db.query(models.Blog, func.count(models.Like.blog_id).label("Likes"))
         .join(models.Like, models.Like.blog_id == models.Blog.id, isouter=True)
         .group_by(models.Blog.id)
-        .filter(models.Blog.title.contains(search))
+        .filter(
+            or_(
+                models.Blog.title.contains(search), 
+                models.Blog.body.contains(search)
+            )
+        )
         .limit(limit)
         .offset(skip)
         .all()
     )
+    # blogs = list(map(lambda x: x._mapping, blogs))
     return blogs
 
 
