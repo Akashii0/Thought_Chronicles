@@ -1,1 +1,56 @@
+name: Build and Deploy Code
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build:
+    environment:
+      name: testing
+    env:
+      DATABASE_PATH: ${{secrets.DATABASE_URL}}  # Path to the SQLite database
+      SECRET_KEY: ${{secrets.SECRET_KEY}}
+      ALGORITHM: ${{secrets.ALGORITHM}}
+      ACCESS_TOKEN_EXPIRE_MINUTES: ${{secrets.ACCESS_TOKEN_EXPIRE_MINUTES}}
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up Python 3.13
+        uses: actions/setup-python@v2
+        with:
+          python-version: "3.13"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Build and Deploy to Server
+        uses: appleboy/ssh-action@v0.1.7
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: 4000
+          script: |
+            cd ~/tc
+            source venv/bin/activate
+            git pull origin main
+            pip install -r requirements.txt
+            # Migrate DB or perform any other necessary setup steps
+            # (SQLite doesn't require migrations, but you could initialize your DB if needed)
+            systemctl restart tc
+            # Commit and push SQLite DB changes to GitHub
+            git add ~/tc/src/blog.db  # Update with actual DB path
+            git commit -m "Update SQLite database"
+            git push origin main
 
