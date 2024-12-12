@@ -33,6 +33,10 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
+      - name: Test SSH connection
+        run: |
+          ssh -i ${{ secrets.SERVER_SSH_KEY }} -p ${{ secrets.SERVER_PORT }} -o StrictHostKeyChecking=no ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} 'echo "SSH Connection Successful"'
+
 
       - name: Build and Deploy to Server
         uses: appleboy/ssh-action@v0.1.7
