@@ -15,6 +15,7 @@ class BlogCreate(BlogBase):
 
 class UserBase(BaseModel):
     author: str
+    profile_picture: Optional[str]
 
     class Config:
         from_attributes = True
