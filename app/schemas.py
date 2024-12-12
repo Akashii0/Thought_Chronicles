@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import Annotated, Optional
+from typing import Annotated, Literal, Optional
 # from typing import Optional
 
 from fastapi import Form
@@ -24,12 +24,16 @@ class BlogResponse(BlogBase):
     created_at: datetime
     owner_id: int
     owner: UserBase
+    
+    class Config:
+        from_attributes = True
+
+class BlogOut(BaseModel):
+    Blog: BlogResponse
     Likes: int
 
     class Config:
         from_attributes = True
-
-
 class UserCreate(BaseModel):
     author: str = Form()
     password: str = Form()
@@ -52,7 +56,9 @@ class UserLogin(BaseModel):
 
 class Like(BaseModel):
     blog_id: int
-    dir: Annotated[int, Field(le=1)]
+    dir: Literal[0, 1]
+    # dir: Annotated[int, Field(le=1)]
+
 
 # Setting up a schema for the token
 
