@@ -35,6 +35,6 @@ class Like(Base):
     blog_id = Column(Integer, ForeignKey(
         "blogs.id", ondelete="CASCADE"), primary_key=True)
     created_at = Column(TIMESTAMP(timezone=True), nullable=False,
-                        server_default=text('now()'))
+                        server_default=text('CURRENT_TIMESTAMP'))
 
     __table_args__ = (UniqueConstraint("user_id", "blog_id", name="user_blog_unique"),)
