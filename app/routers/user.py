@@ -91,19 +91,9 @@ def get_pfps(
 ):
     user = db.query(models.User).filter(models.User.id == user_id).first()
 
-    # if not user or not user.profile_picture:
-    #     raise HTTPException(status_code=404, detail="Profile picture not found.")
+    if not user or not user.profile_picture:
+        raise HTTPException(status_code=404, detail="Profile picture not found.")
 
-    # BASE_DIR = Path("~/tc/src/profile_picture").expanduser()
-    # profile_picture_path = user.profile_picture
-    # profile_picture_path = BASE_DIR / user.profile_picture
-    # BASE_DIR = "/home/xen/tc/src/profile_picture"
-
-    # file_path = Path("/home/xen/tc/src/profile_pictures") / user.profile_picture
-
-    # file_path = Path(profile_picture_path).expanduser()
-
-    # file_path = Path(f"/home/xen/tc/src/{user.profile_picture}")
     # file_path = Path(f"{user.profile_picture}")
 
     raw_path = user.profile_picture  # Example: "profile_pictures\\file.jpg"
@@ -111,16 +101,10 @@ def get_pfps(
     
     file_path = Path(normalized_path).resolve()
 
-    # if not file_path.exists():
-    # if not profile_picture_path.exists():
-    # file_path = Path(BASE_DIR) / user.profile_picture
-
-    # if not file_path.exists():
-    #     raise HTTPException(status_code=404, detail="Profile picture file not found.")
+    if not file_path.exists():
+        raise HTTPException(status_code=404, detail="Profile picture file not found.")
 
     return FileResponse(file_path, media_type="image/jpeg")
-    # return FileResponse(profile_picture_path, media_type="image/jpeg")
-    # return {"profile_picture": f"/{user.profile_picture}"}
 
 
 @router.post("/{user_id}/upload-profile-picture")
