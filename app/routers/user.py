@@ -98,7 +98,9 @@ def get_pfps(
     # profile_picture_path = user.profile_picture
     # profile_picture_path = BASE_DIR / user.profile_picture
 
-    file_path = Path("/home/xen/tc/src/profile_pictures") / user.profile_picture
+    BASE_DIR = "/home/xen/tc/src/profile_picture"
+
+    # file_path = Path("/home/xen/tc/src/profile_pictures") / user.profile_picture
 
     # file_path = Path(profile_picture_path).expanduser()
 
@@ -106,8 +108,10 @@ def get_pfps(
 
     # if not file_path.exists():
     # if not profile_picture_path.exists():
-    # if not file_path.exists():
-    #     raise HTTPException(status_code=404, detail="Profile picture file not found.")
+    file_path = Path(BASE_DIR) / user.profile_picture
+
+    if not file_path.exists():
+        raise HTTPException(status_code=404, detail="Profile picture file not found.")
 
     return FileResponse(file_path, media_type="image/jpeg")
     # return FileResponse(profile_picture_path, media_type="image/jpeg")
