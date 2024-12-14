@@ -91,8 +91,8 @@ def get_pfps(
 ):
     user = db.query(models.User).filter(models.User.id == user_id).first()
 
-    if not user or not user.profile_picture:
-        raise HTTPException(status_code=404, detail="Profile picture not found.")
+    # if not user or not user.profile_picture:
+    #     raise HTTPException(status_code=404, detail="Profile picture not found.")
 
     # BASE_DIR = Path("~/tc/src/profile_picture").expanduser()
     # profile_picture_path = user.profile_picture
