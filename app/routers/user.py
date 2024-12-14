@@ -90,10 +90,15 @@ def get_pfps(
     db: Session = Depends(get_db),
 ):
     user = db.query(models.User).filter(models.User.id == user_id).first()
+
     if not user or not user.profile_picture:
         raise HTTPException(status_code=404, detail="Profile picture not found.")
+    
+    profile_picture_path = user.profile_picture
 
-    file_path = Path(f".\{user.profile_picture}")
+    file_path = Path(profile_picture_path).expanduser()
+
+    # file_path = Path(f".\{user.profile_picture}")
     print(file_path)
     if not file_path.exists():
         raise HTTPException(status_code=404, detail="Profile picture file not found.")
