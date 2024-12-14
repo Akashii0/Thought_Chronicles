@@ -169,3 +169,14 @@ async def upload_profile_picture(
 
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"An error occurred: {e}")
+
+
+@router.get("/debug-path/{user_id}")
+def debug_path(
+    user_id: int,
+    db: Session = Depends(get_db),
+):
+    user = db.query(models.User).filter(models.User.id == user_id).first()
+    profile_picture_path = user.profile_picture
+    resolved_path = Path(profile_picture_path).expanduser()
+    return {"raw_path": profile_picture_path, "resolved_path": str(resolved_path)}
