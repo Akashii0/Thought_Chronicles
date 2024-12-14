@@ -103,7 +103,8 @@ def get_pfps(
 
     # file_path = Path(profile_picture_path).expanduser()
 
-    file_path = Path(f"/home/xen/tc/src/{user.profile_picture}")
+    # file_path = Path(f"/home/xen/tc/src/{user.profile_picture}")
+    file_path = Path("/home/xen/tc/src/profile_pictures/7bfa95a9-58eb-492c-810d-fcd410213283_image_1.jpg")
 
     # if not file_path.exists():
     # if not profile_picture_path.exists():
