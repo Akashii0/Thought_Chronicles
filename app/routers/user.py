@@ -187,3 +187,8 @@ def debug_path(
     profile_picture_path = user.profile_picture
     resolved_path = Path(profile_picture_path).expanduser()
     return {"raw_path": profile_picture_path, "resolved_path": str(resolved_path)}
+
+@router.get("/testpfp")
+def return_pfp():
+    file_path = Path("image_1.jpg")
+    return FileResponse(file_path, media_type="image/jpeg")
