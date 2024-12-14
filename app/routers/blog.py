@@ -19,7 +19,7 @@ router = APIRouter(tags=["Blogs"], prefix="/api/blogs")
 @router.get("/", response_model=List[schemas.BlogOut])
 def get_blogs(
     db: Session = Depends(get_db),
-    limit: int = 10,
+    limit: int = 100,
     skip: int = 0,
     search: Optional[str] = "",
 ):
