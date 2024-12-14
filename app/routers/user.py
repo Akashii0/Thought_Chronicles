@@ -190,5 +190,5 @@ def debug_path(
 
 @router.get("/testpfp")
 def return_pfp():
-    file_path = Path("image_1.jpg")
+    file_path = Path("./test_folder/image_1.jpg")
     return FileResponse(file_path, media_type="image/jpeg")
