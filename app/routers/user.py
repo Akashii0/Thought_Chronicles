@@ -123,7 +123,7 @@ async def upload_profile_picture(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Not authorized to perform requested action",
         )
-
+ 
     # Validate file type, IF its an img or video/music. hehe
     if not file.content_type.startswith("image/"):
         raise HTTPException(status_code=400, detail="Only image files are allowed.")
@@ -136,8 +136,10 @@ async def upload_profile_picture(
 
     try:
         # Retrieve the old profile picture path
-        old_file_path = user.profile_picture
-
+        old_raw_file_path = user.profile_picture
+        old_normalized_path = old_raw_file_path.replace("\\", "/")
+        old_file_path = Path(old_normalized_path).resolve()
+        
         # If the old profile picture exists, remove it
         if old_file_path and os.path.exists(old_file_path):
             os.remove(old_file_path)
