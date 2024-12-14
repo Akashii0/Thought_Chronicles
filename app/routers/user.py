@@ -93,7 +93,8 @@ def get_pfps(
     if not user or not user.profile_picture:
         raise HTTPException(status_code=404, detail="Profile picture not found.")
 
-    file_path = Path(user.profile_picture)
+    file_path = Path(f".\{user.profile_picture}")
+    print(file_path)
     if not file_path.exists():
         raise HTTPException(status_code=404, detail="Profile picture file not found.")
 
