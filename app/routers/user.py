@@ -137,9 +137,7 @@ async def upload_profile_picture(
 
     try:
         # Retrieve the old profile picture path
-        old_raw_file_path = user.profile_picture
-        old_normalized_path = old_raw_file_path.replace("\\", "/")
-        old_file_path = Path(old_normalized_path).resolve()
+        old_file_path = user.profile_picture
         
         # If the old profile picture exists, remove it
         if old_file_path and os.path.exists(old_file_path):
