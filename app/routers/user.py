@@ -14,6 +14,7 @@ from fastapi import (
 from fastapi.responses import FileResponse, JSONResponse
 from sqlalchemy.orm import Session
 import app.oauth2 as oauth2
+import app.schemas as schemas
 import app.models as models
 import app.utils as utils
 from app.database import get_db
@@ -179,7 +180,13 @@ def debug_path(
     resolved_path = Path(profile_picture_path).expanduser()
     return {"raw_path": profile_picture_path, "resolved_path": str(resolved_path)}
 
+
 @router.get("/testpfp")
 def return_pfp():
     file_path = Path("./test_folder/image_1.jpg")
     return FileResponse(file_path, media_type="image/jpeg")
+
+
+@router.get("/me", response_model=schemas.UserOut)
+def read_current_user(current_user: int = Depends(oauth2.get_current_user),):
+    return current_user
