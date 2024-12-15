@@ -62,6 +62,9 @@ class UserOut(BaseModel):
     created_at: datetime
 
     class Config:
+        json_encoders = {
+            datetime: lambda v: v.strftime("%Y-%m-%d %H:%M:%S")  # Custom format for datetime
+        }
         from_attributes = True
         # orm_mode = True
 
