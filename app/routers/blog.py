@@ -23,22 +23,42 @@ def get_blogs(
     skip: int = 0,
     search: Optional[str] = "",
 ):
-    
     blogs = (
         db.query(models.Blog, func.count(models.Like.blog_id).label("Likes"))
         .join(models.Like, models.Like.blog_id == models.Blog.id, isouter=True)
         .group_by(models.Blog.id)
         .filter(
-            or_(
-                models.Blog.title.contains(search),
-                models.Blog.body.contains(search)
-            )
+            or_(models.Blog.title.contains(search), models.Blog.body.contains(search))
         )
         .limit(limit)
         .offset(skip)
         .all()
     )
     # blogs = list(map(lambda x: x._mapping, blogs))
+    return blogs
+
+
+@router.get("/me", response_model=List[schemas.BlogOut])
+def get_currentUser_blogs(
+    db: Session = Depends(get_db),
+    current_user: int = Depends(oauth2.get_current_user),
+    limit: int = 100,
+    skip: int = 0,
+    search: Optional[str] = "",
+):
+
+    blogs = (
+        db.query(models.Blog, func.count(models.Like.blog_id).label("Likes"))
+        .join(models.Like, models.Like.blog_id == models.Blog.id, isouter=True)
+        .group_by(models.Blog.id)
+        .filter(models.Blog.owner_id == current_user.id)  # Filter by current user ID
+        .filter(
+            or_(models.Blog.title.contains(search), models.Blog.body.contains(search))
+        )
+        .limit(limit)
+        .offset(skip)
+        .all()
+    )
     return blogs
 
 
@@ -123,3 +143,4 @@ def delete(
     blog_query.delete(synchronize_session=False)
     db.commit()
     return {"message": "Blog deleted successfully"}
+
