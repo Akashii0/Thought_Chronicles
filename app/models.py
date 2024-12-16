@@ -4,6 +4,7 @@ from sqlalchemy.orm import relationship
 from sqlalchemy.sql.expression import text
 from app.database import Base
 
+
 class User(Base):
     __tablename__ = "users"
 
@@ -14,7 +15,8 @@ class User(Base):
                         server_default=text('CURRENT_TIMESTAMP'))
     profile_picture = Column(String, nullable=True)
     is_admin = Column(Boolean, default=False)
-    
+
+
 class Blog(Base):
     __tablename__ = "blogs"
 
@@ -26,6 +28,23 @@ class Blog(Base):
     owner_id = Column(Integer, ForeignKey(
         "users.id", ondelete="CASCADE"), nullable=False)
     owner = relationship("User", backref="blogs")
+
+    # Relationship to BlogImage
+    images = relationship("BlogImage", back_populates="blog", cascade="all, delete-orphan")
+
+
+class BlogImage(Base):
+    __tablename__ = "blog_images"
+
+    id = Column(Integer, primary_key=True, nullable=False)
+    blog_id = Column(Integer, ForeignKey(
+        "blogs.id", ondelete="CASCADE"), nullable=False)
+    filename = Column(String, unique=True)
+    content_type = Column(String)
+
+    # Relationship to Blogs
+    blog = relationship("Blog", back_populates="images")
+
 
 class Like(Base):
     __tablename__ = "likes"
