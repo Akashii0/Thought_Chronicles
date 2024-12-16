@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import Annotated, Literal, Optional
+from typing import Annotated, List, Literal, Optional
 # from typing import Optional
 
 from fastapi import Form
@@ -43,9 +43,20 @@ class BlogResponse(BlogBase):
         from_attributes = True
 
 
+class BlogImageResponse(BaseModel):
+    id: int
+    blog_id: int
+    filename: str
+    content_type: str
+
+    class Config:
+        from_attributes = True
+
+
 class BlogOut(BaseModel):
     Blog: BlogResponse
     Likes: int
+    Images: List[BlogImageResponse]
 
     class Config:
         from_attributes = True
