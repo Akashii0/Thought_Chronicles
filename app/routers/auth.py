@@ -130,8 +130,8 @@ def refresh_token(
     )
 
     return response
-        
-        
+
+
 # @router.post("/logout")
 # def logout(response: Response):
 #     response = JSONResponse(content={"message": "Logged out successfully"})
@@ -145,7 +145,7 @@ def logout(response: Response):
     Logout user by clearing the access and refresh tokens from cookies.
     """
     response = JSONResponse(content={"message": "Logged out successfully"})
-    
+
     # Delete access token cookie
     response.delete_cookie(
         key="access_token",
@@ -154,7 +154,7 @@ def logout(response: Response):
         secure=True,
         samesite="none"
     )
-    
+
     # Delete refresh token cookie
     response.delete_cookie(
         key="refresh_token",
@@ -163,6 +163,5 @@ def logout(response: Response):
         secure=True,
         samesite="none"
     )
-    
-    return response
 
+    return response
