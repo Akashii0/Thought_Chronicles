@@ -93,7 +93,9 @@ def get_pfps(
     user = db.query(models.User).filter(models.User.id == user_id).first()
 
     if not user or not user.profile_picture:
-        raise HTTPException(status_code=404, detail="Profile picture not found.")
+        fallBack_path = Path("./fallbackImage/fallback.svg")
+        # raise HTTPException(status_code=404, detail="Profile picture not found.")
+        return FileResponse(fallBack_path)
 
     # file_path = Path(f"{user.profile_picture}")
 
@@ -104,6 +106,8 @@ def get_pfps(
 
     if not file_path.exists():
         raise HTTPException(status_code=404, detail="Profile picture file not found.")
+        # fallBack_path = Path("./fallbackImage/fallback.svg")
+        # return FileResponse(fallBack_path)
 
     return FileResponse(file_path, media_type="image/jpeg")
 
