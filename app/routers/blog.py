@@ -185,6 +185,7 @@ def create_blog(
             unique_filename = f"{uuid.uuid4()}_{image.filename}"
             file_path = UPLOAD_DIR / unique_filename
             filename_str = str(file_path)
+            normalized_path = filename_str.replace("\\", "/")
 
             # Save the image file
             with file_path.open("wb") as buffer:
@@ -193,7 +194,7 @@ def create_blog(
             # Save image metadata to the database
             new_image = models.BlogImage(
                 blog_id=new_blog.id,
-                filename=filename_str,
+                filename=normalized_path,
                 content_type=image.content_type,
             )
             db.add(new_image)
