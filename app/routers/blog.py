@@ -141,19 +141,76 @@ def get_currentUser_blogs(
     # blogs = list(map(lambda x: x._mapping, blogs))
     return blog_out_list
 
+# @router.post("/")
+# def create(
+#     request: Request,
+#     db: Session = Depends(get_db),
+#     title: str = Form(...),
+#     body: str = Form(...),
+#     current_user: int = Depends(oauth2.get_current_user),
+# ):
+#     new_blog = models.Blog(title=title, body=body, owner_id=current_user.id)
+#     db.add(new_blog)
+#     db.commit()
+#     db.refresh(new_blog)
+#     return {"message": "Blog created successfully", "blog": new_blog}
+
+
 @router.post("/")
-def create(
-    request: Request,
-    db: Session = Depends(get_db),
+def create_blog(
     title: str = Form(...),
     body: str = Form(...),
+    images: Optional[List[UploadFile]] = None,
+    db: Session = Depends(get_db),
     current_user: int = Depends(oauth2.get_current_user),
 ):
-    new_blog = models.Blog(title=title, body=body, owner_id=current_user.id)
+    # Create a new blog entry
+    new_blog = models.Blog(
+        title=title,
+        body=body,
+        owner_id=current_user.id,
+    )
     db.add(new_blog)
     db.commit()
     db.refresh(new_blog)
-    return {"message": "Blog created successfully", "blog": new_blog}
+
+    # Process uploaded images, if any
+    saved_images = []
+    if images:
+        for image in images:
+            if not image.content_type.startswith("image/"):
+                raise HTTPException(
+                    status_code=400, detail="All uploaded files must be images."
+                )
+            unique_filename = f"{uuid.uuid4()}_{image.filename}"
+            file_path = UPLOAD_DIR / unique_filename
+            filename_str = str(file_path)
+
+            # Save the image file
+            with file_path.open("wb") as buffer:
+                shutil.copyfileobj(image.file, buffer)
+
+            # Save image metadata to the database
+            new_image = models.BlogImage(
+                blog_id=new_blog.id,
+                filename=filename_str,
+                content_type=image.content_type,
+            )
+            db.add(new_image)
+            saved_images.append(new_image)
+        db.commit()
+
+    # Ensure the `images` field is always populated (even if empty)
+    images_response = [schemas.BlogImageResponse.from_orm(img) for img in saved_images]
+
+    # Prepare the response
+    blog_out = schemas.BlogOut(
+        Blog=schemas.BlogResponse.model_validate(new_blog),
+        Likes=0,
+        Images=images_response,
+    )
+
+    return blog_out
 
 
 @router.get("/{blog_id}", response_model=schemas.BlogOut)
