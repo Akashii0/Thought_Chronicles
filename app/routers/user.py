@@ -1,4 +1,5 @@
 # from sqlite3 import IntegrityError
+from typing import List, Optional
 from fastapi.security.oauth2 import OAuth2PasswordRequestForm
 from typing_extensions import Annotated
 from sqlalchemy.exc import IntegrityError
@@ -12,6 +13,7 @@ from fastapi import (
     status,
 )
 from fastapi.responses import FileResponse, JSONResponse
+from sqlalchemy import or_
 from sqlalchemy.orm import Session
 import app.oauth2 as oauth2
 import app.schemas as schemas
@@ -100,8 +102,10 @@ def get_pfps(
     # file_path = Path(f"{user.profile_picture}")
 
     raw_path = user.profile_picture  # Example: "profile_pictures\\file.jpg"
-    normalized_path = raw_path.replace("\\", "/")  # Convert to "profile_pictures/file.jpg"
-    
+    normalized_path = raw_path.replace(
+        "\\", "/"
+    )  # Convert to "profile_pictures/file.jpg"
+
     file_path = Path(normalized_path).resolve()
 
     if not file_path.exists():
@@ -128,7 +132,7 @@ async def upload_profile_picture(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Not authorized to perform requested action",
         )
- 
+
     # Validate file type, IF its an img or video/music. hehe
     if not file.content_type.startswith("image/"):
         raise HTTPException(status_code=400, detail="Only image files are allowed.")
@@ -142,7 +146,7 @@ async def upload_profile_picture(
     try:
         # Retrieve the old profile picture path
         old_file_path = user.profile_picture
-        
+
         # If the old profile picture exists, remove it
         if old_file_path and os.path.exists(old_file_path):
             os.remove(old_file_path)
@@ -190,5 +194,52 @@ def return_pfp():
 
 
 @router.get("/me", response_model=schemas.UserOut)
-def read_current_user(current_user: int = Depends(oauth2.get_current_user),):
+def read_current_user(
+    current_user: int = Depends(oauth2.get_current_user),
+):
     return current_user
+
+
+@router.get("/{user_id}", response_model=List[schemas.BlogOut])
+def user_profile(
+    user_id: int,
+    db: Session = Depends(get_db),
+    search: Optional[str] = "",
+):
+    blogs = (
+        db.query(models.Blog)
+        .filter(models.Blog.owner_id == user_id)
+        .filter(
+            or_(models.Blog.title.contains(search),
+                models.Blog.body.contains(search))
+        )
+        .all()
+    )
+
+    blog_out_list = []
+
+    for blog in blogs:
+        # Fetch blog images for each blog
+        images = (
+            db.query(models.BlogImage).filter(models.BlogImage.blog_id == blog.id).all()
+        )
+
+        # Fetch the number of likes for each blog (assuming a Like model)
+        likes_count = (
+            db.query(models.Like).filter(models.Like.blog_id == blog.id).count()
+        )
+
+        # Prepare the response data for this blog
+        blog_out = schemas.BlogOut(
+            Blog=schemas.BlogResponse.model_validate(
+                blog
+            ),  # Convert the Blog object to BlogResponse
+            Likes=likes_count,
+            Images=[
+                schemas.BlogImageResponse.model_validate(image) for image in images
+            ],  # Convert each BlogImage to BlogImageResponse
+        )
+        # Add to the list
+        blog_out_list.append(blog_out)
+
+    return blog_out_list
