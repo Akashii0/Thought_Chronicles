@@ -16,8 +16,23 @@ class BlogCreate(BlogBase):
     pass
 
 
+class UserProfile(BaseModel):
+    id: int
+    author: str
+    bio: Optional[str] = None
+    created_at: datetime
+    is_admin: Optional[bool] = None
+
+    class Config:
+        json_encoders = {
+            datetime: lambda v: v.strftime("%Y-%m-%d %H:%M:%S")  # Custom format for datetime
+        }
+        from_attributes = True
+
+
 class UserBase(BaseModel):
     author: str
+    bio: Optional[str] = None
 
     class Config:
         from_attributes = True
