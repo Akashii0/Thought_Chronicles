@@ -240,35 +240,103 @@ def get_specific_blog(blog_id: int, db: Session = Depends(get_db)):
     return blog_response
 
 
-@router.put("/{blog_id}", response_model=schemas.BlogResponse)
-def update(
-    request: Request,
+# @router.put("/{blog_id}", response_model=schemas.BlogResponse)
+# def update(
+#     request: Request,
+#     blog_id: int,
+#     title: str = Form(...),
+#     body: str = Form(...),
+#     db: Session = Depends(get_db),
+#     current_user: int = Depends(oauth2.get_current_user),
+# ):
+#     blog_query = db.query(models.Blog).filter(models.Blog.id == blog_id)
+#     blog = blog_query.first()
+
+#     if blog == None:
+#         raise HTTPException(
+#             status_code=status.HTTP_404_NOT_FOUND,
+#             detail=f"Blog with id {blog_id} not found",
+#         )
+
+#     if blog.owner_id != current_user.id:
+#         raise HTTPException(
+#             status_code=status.HTTP_403_FORBIDDEN,
+#             detail="Not authorized to perform requested action",
+#         )
+
+#     update_data = {"title": title, "body": body}
+
+#     blog_query.update(update_data, synchronize_session=False)
+#     db.commit()
+#     return {"message": "Blog updated successfully", "blog": blog}
+
+@router.put("/{blog_id}", response_model=schemas.BlogOut)
+def update_blog(
     blog_id: int,
-    title: str = Form(...),
-    body: str = Form(...),
+    title: Optional[str] = Form(None),
+    body: Optional[str] = Form(None),
+    images: Optional[List[UploadFile]] = None,
     db: Session = Depends(get_db),
     current_user: int = Depends(oauth2.get_current_user),
 ):
-    blog_query = db.query(models.Blog).filter(models.Blog.id == blog_id)
-    blog = blog_query.first()
+    # Retrieve the blog to be updated
+    blog = db.query(models.Blog).filter(
+        models.Blog.id == blog_id, models.Blog.owner_id == current_user.id
+    ).first()
 
-    if blog == None:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"Blog with id {blog_id} not found",
-        )
+    if not blog:
+        raise HTTPException(status_code=404, detail="Blog not found or not authorized")
 
-    if blog.owner_id != current_user.id:
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="Not authorized to perform requested action",
-        )
+    # Update the title and body if provided
+    if title:
+        blog.title = title
+    if body:
+        blog.body = body
 
-    update_data = {"title": title, "body": body}
+    # Fetch the number of likes for each blog (assuming a Like model)
+    likes_count = (
+        db.query(models.Like).filter(models.Like.blog_id == blog.id).count()
+    )
 
-    blog_query.update(update_data, synchronize_session=False)
+    # Process updated images if provided
+    saved_images = []
+    if images:
+        for image in images:
+            if not image.content_type.startswith("image/"):
+                raise HTTPException(
+                    status_code=400, detail="All uploaded files must be images."
+                )
+            unique_filename = f"{uuid.uuid4()}_{image.filename}"
+            file_path = UPLOAD_DIR / unique_filename
+            filename_str = str(file_path)
+            normalized_path = filename_str.replace("\\", "/")
+
+            # Save the image file
+            with file_path.open("wb") as buffer:
+                shutil.copyfileobj(image.file, buffer)
+
+            # Save image metadata to the database
+            new_image = models.BlogImage(
+                blog_id=blog.id,
+                filename=normalized_path,
+                content_type=image.content_type,
+            )
+            db.add(new_image)
+            saved_images.append(new_image)
+        db.commit()
+
     db.commit()
-    return {"message": "Blog updated successfully", "blog": blog}
+    db.refresh(blog)
+
+    # Prepare the response
+    images_response = [schemas.BlogImageResponse.from_orm(img) for img in saved_images]
+    blog_out = schemas.BlogOut(
+        Blog=schemas.BlogResponse.model_validate(blog),
+        Likes=likes_count,
+        Images=images_response,
+    )
+
+    return blog_out
 
 
 @router.delete("/{blog_id}", status_code=status.HTTP_204_NO_CONTENT)
@@ -351,7 +419,7 @@ async def get_image(image_id: int, db: Session = Depends(get_db)):
     raw_path = blog_image.filename
 
     normalized_path = raw_path.replace("\\", "/")  # Convert to "profile_pictures/file.jpg"
-    
+
     file_path = Path(normalized_path).resolve()
 
     return FileResponse(file_path, media_type="image/jpeg")
