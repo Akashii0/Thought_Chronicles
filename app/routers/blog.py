@@ -240,35 +240,49 @@ def get_specific_blog(blog_id: int, db: Session = Depends(get_db)):
     return blog_response
 
 
-# @router.put("/{blog_id}", response_model=schemas.BlogResponse)
-# def update(
-#     request: Request,
-#     blog_id: int,
-#     title: str = Form(...),
-#     body: str = Form(...),
-#     db: Session = Depends(get_db),
-#     current_user: int = Depends(oauth2.get_current_user),
-# ):
-#     blog_query = db.query(models.Blog).filter(models.Blog.id == blog_id)
-#     blog = blog_query.first()
+@router.get("/{user_id}", response_model=List[schemas.BlogOut])
+def user_profile(
+    user_id: int,
+    db: Session = Depends(get_db),
+    search: Optional[str] = "",
+):
+    blogs = (
+        db.query(models.Blog)
+        .filter(models.Blog.owner_id == user_id)
+        .filter(
+            or_(models.Blog.title.contains(search), models.Blog.body.contains(search))
+        )
+        .all()
+    )
 
-#     if blog == None:
-#         raise HTTPException(
-#             status_code=status.HTTP_404_NOT_FOUND,
-#             detail=f"Blog with id {blog_id} not found",
-#         )
+    blog_out_list = []
 
-#     if blog.owner_id != current_user.id:
-#         raise HTTPException(
-#             status_code=status.HTTP_403_FORBIDDEN,
-#             detail="Not authorized to perform requested action",
-#         )
+    for blog in blogs:
+        # Fetch blog images for each blog
+        images = (
+            db.query(models.BlogImage).filter(models.BlogImage.blog_id == blog.id).all()
+        )
 
-#     update_data = {"title": title, "body": body}
+        # Fetch the number of likes for each blog (assuming a Like model)
+        likes_count = (
+            db.query(models.Like).filter(models.Like.blog_id == blog.id).count()
+        )
 
-#     blog_query.update(update_data, synchronize_session=False)
-#     db.commit()
-#     return {"message": "Blog updated successfully", "blog": blog}
+        # Prepare the response data for this blog
+        blog_out = schemas.BlogOut(
+            Blog=schemas.BlogResponse.model_validate(
+                blog
+            ),  # Convert the Blog object to BlogResponse
+            Likes=likes_count,
+            Images=[
+                schemas.BlogImageResponse.model_validate(image) for image in images
+            ],  # Convert each BlogImage to BlogImageResponse
+        )
+        # Add to the list
+        blog_out_list.append(blog_out)
+
+    return blog_out_list
+
 
 @router.put("/{blog_id}", response_model=schemas.BlogOut)
 def update_blog(
