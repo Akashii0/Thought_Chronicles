@@ -240,7 +240,7 @@ def get_specific_blog(blog_id: int, db: Session = Depends(get_db)):
     return blog_response
 
 
-@router.get("/{user_id}", response_model=List[schemas.BlogOut])
+@router.get("/users/{user_id}", response_model=List[schemas.BlogOut])
 def user_profile(
     user_id: int,
     db: Session = Depends(get_db),
