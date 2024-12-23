@@ -208,35 +208,6 @@ def bios(user_id: int, db: Session = Depends(get_db)):
     return user.bio
 
 
-@router.put("/bio/{user_id}")
-def user_bio(
-    user_id: int,
-    db: Session = Depends(get_db),
-    bio: str = Form(...),
-    current_user: int = Depends(oauth2.get_current_user)
-):
-    # Find the user
-    user = db.query(models.User).filter(models.User.id == user_id).first()
-    if not user:
-        raise HTTPException(status_code=404, detail="User not found")
-
-    if user_id != current_user.id:
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="Not authorized to perform requested action",
-        )
-
-    # Update bio
-    user.bio = bio
-    db.commit()
-    db.refresh(user)
-    return {"message": "Bio updated successfully",
-            "user": {"id": user.id,
-                     "username": user.author,
-                     "bio": user.bio}
-            }
-
-
 @router.get("/profiles/{user_id}", response_model=schemas.UserProfile)
 def user_profiles(
     user_id: int,
@@ -249,11 +220,12 @@ def user_profiles(
     return user
 
 
-@router.put("/author/{user_id}")
-def author_update(
+@router.put("/profiles/{user_id}")
+def profile_update(
     user_id: int,
     db: Session = Depends(get_db),
-    author: str = Form(...),
+    author: Optional[str] = Form(None),
+    bio: Optional[str] = Form(None),
     current_user: int = Depends(oauth2.get_current_user)
 ):
     # Find the user
@@ -267,8 +239,11 @@ def author_update(
             detail="Not authorized to perform requested action",
         )
 
-    # Update bio
-    user.author = author
+    # Update profile
+    if author:
+        user.author = author
+    if bio:
+        user.bio = bio
     db.commit()
     db.refresh(user)
     return {"message": "Bio updated successfully",
