@@ -201,56 +201,11 @@ def read_current_user(
     return current_user
 
 
-@router.get("/{user_id}", response_model=List[schemas.BlogOut])
-def user_profile(
-    user_id: int,
-    db: Session = Depends(get_db),
-    search: Optional[str] = "",
-):
-    blogs = (
-        db.query(models.Blog)
-        .filter(models.Blog.owner_id == user_id)
-        .filter(
-            or_(models.Blog.title.contains(search), models.Blog.body.contains(search))
-        )
-        .all()
-    )
-
-    blog_out_list = []
-
-    for blog in blogs:
-        # Fetch blog images for each blog
-        images = (
-            db.query(models.BlogImage).filter(models.BlogImage.blog_id == blog.id).all()
-        )
-
-        # Fetch the number of likes for each blog (assuming a Like model)
-        likes_count = (
-            db.query(models.Like).filter(models.Like.blog_id == blog.id).count()
-        )
-
-        # Prepare the response data for this blog
-        blog_out = schemas.BlogOut(
-            Blog=schemas.BlogResponse.model_validate(
-                blog
-            ),  # Convert the Blog object to BlogResponse
-            Likes=likes_count,
-            Images=[
-                schemas.BlogImageResponse.model_validate(image) for image in images
-            ],  # Convert each BlogImage to BlogImageResponse
-        )
-        # Add to the list
-        blog_out_list.append(blog_out)
-
-    return blog_out_list
-
-
 @router.get('/bio/{user_id}')
 def bios(user_id: int, db: Session = Depends(get_db)):
     user = db.query(models.User).filter(models.User.id == user_id).first()
 
     return user.bio
-
 
 
 @router.put("/bio/{user_id}")
@@ -280,3 +235,15 @@ def user_bio(
                      "username": user.author,
                      "bio": user.bio}
             }
+
+
+@router.get("/profiles/{user_id}", response_model=schemas.UserProfile)
+def user_profiles(
+    user_id: int,
+    db: Session = Depends(get_db),
+):
+    user = db.query(models.User).filter(models.User.id == user_id).first()
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+
+    return user
