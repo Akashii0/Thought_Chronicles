@@ -14,6 +14,7 @@ class User(Base):
     created_at = Column(TIMESTAMP(timezone=True), nullable=False,
                         server_default=text('CURRENT_TIMESTAMP'))
     profile_picture = Column(String, nullable=True)
+    bio = Column(String, nullable=True)
     is_admin = Column(Boolean, default=False)
 
 
