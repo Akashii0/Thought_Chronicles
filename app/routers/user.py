@@ -247,3 +247,32 @@ def user_profiles(
         raise HTTPException(status_code=404, detail="User not found")
 
     return user
+
+
+@router.put("/author/{user_id}")
+def author_update(
+    user_id: int,
+    db: Session = Depends(get_db),
+    author: str = Form(...),
+    current_user: int = Depends(oauth2.get_current_user)
+):
+    # Find the user
+    user = db.query(models.User).filter(models.User.id == user_id).first()
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+
+    if user_id != current_user.id:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Not authorized to perform requested action",
+        )
+
+    # Update bio
+    user.author = author
+    db.commit()
+    db.refresh(user)
+    return {"message": "Bio updated successfully",
+            "user": {"id": user.id,
+                     "username": user.author,
+                     "bio": user.bio}
+            }
