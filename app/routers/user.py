@@ -11,6 +11,7 @@ from fastapi import (
     Request,
     UploadFile,
     status,
+    Form,
 )
 from fastapi.responses import FileResponse, JSONResponse
 from sqlalchemy import or_
@@ -210,8 +211,7 @@ def user_profile(
         db.query(models.Blog)
         .filter(models.Blog.owner_id == user_id)
         .filter(
-            or_(models.Blog.title.contains(search),
-                models.Blog.body.contains(search))
+            or_(models.Blog.title.contains(search), models.Blog.body.contains(search))
         )
         .all()
     )
@@ -243,3 +243,40 @@ def user_profile(
         blog_out_list.append(blog_out)
 
     return blog_out_list
+
+
+@router.get('/bio/{user_id}')
+def bios(user_id: int, db: Session = Depends(get_db)):
+    user = db.query(models.User).filter(models.User.id == user_id).first()
+
+    return user.bio
+
+
+
+@router.put("/bio/{user_id}")
+def user_bio(
+    user_id: int,
+    db: Session = Depends(get_db),
+    bio: str = Form(...),
+    current_user: int = Depends(oauth2.get_current_user)
+):
+    # Find the user
+    user = db.query(models.User).filter(models.User.id == user_id).first()
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+
+    if user_id != current_user.id:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Not authorized to perform requested action",
+        )
+
+    # Update bio
+    user.bio = bio
+    db.commit()
+    db.refresh(user)
+    return {"message": "Bio updated successfully",
+            "user": {"id": user.id,
+                     "username": user.author,
+                     "bio": user.bio}
+            }
