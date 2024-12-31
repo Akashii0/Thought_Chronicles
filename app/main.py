@@ -1,5 +1,7 @@
+from pathlib import Path
 from fastapi import FastAPI, Depends
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
 from sqlalchemy.orm import Session
 import app.models as models
 from app.database import engine, get_db
@@ -8,7 +10,12 @@ from app.routers import blog, auth, user, likes
 # Create the database tables
 models.Base.metadata.create_all(bind=engine)
 
+UPLOAD_DIR = Path("blog_images")
+UPLOAD_DIR.mkdir(parents=True, exist_ok=True)
+
 app = FastAPI()
+
+app.mount("/blog_images", StaticFiles(directory=UPLOAD_DIR), name="blog_images")
 
 origins = [
     "http://localhost:3000",

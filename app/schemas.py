@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import Annotated, Literal, Optional
+from typing import Annotated, List, Literal, Optional
 # from typing import Optional
 
 from fastapi import Form
@@ -16,8 +16,23 @@ class BlogCreate(BlogBase):
     pass
 
 
+class UserProfile(BaseModel):
+    id: int
+    author: str
+    bio: Optional[str] = None
+    created_at: datetime
+    is_admin: Optional[bool] = None
+
+    class Config:
+        json_encoders = {
+            datetime: lambda v: v.strftime("%Y-%m-%d %H:%M:%S")  # Custom format for datetime
+        }
+        from_attributes = True
+
+
 class UserBase(BaseModel):
     author: str
+    bio: Optional[str] = None
 
     class Config:
         from_attributes = True
@@ -43,9 +58,20 @@ class BlogResponse(BlogBase):
         from_attributes = True
 
 
+class BlogImageResponse(BaseModel):
+    id: int
+    blog_id: int
+    filename: str
+    content_type: str
+
+    class Config:
+        from_attributes = True
+
+
 class BlogOut(BaseModel):
     Blog: BlogResponse
     Likes: int
+    Images: List[BlogImageResponse]
 
     class Config:
         from_attributes = True
@@ -62,6 +88,9 @@ class UserOut(BaseModel):
     created_at: datetime
 
     class Config:
+        json_encoders = {
+            datetime: lambda v: v.strftime("%Y-%m-%d %H:%M:%S")  # Custom format for datetime
+        }
         from_attributes = True
         # orm_mode = True
 
